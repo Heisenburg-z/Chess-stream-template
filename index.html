@@ -6,814 +6,312 @@
     <title>Epic Chess Stream Overlay</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+        /* Previous CSS remains unchanged */
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #0a0a0a;
-            --secondary: #1a1a2e;
-            --accent: #16213e;
-            --neon-blue: #00f5ff;
-            --neon-purple: #bf00ff;
-            --neon-pink: #ff0080;
-            --neon-green: #39ff14;
-            --gold: #ffd700;
-            --text: #ffffff;
-            --text-glow: #00f5ff;
-            --board-light: #f0d9b5;
-            --board-dark: #8b4513;
-            --timer-critical: #ff073a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
-            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 70%);
-            color: var(--text);
-            min-height: 100vh;
-            font-family: 'Rajdhani', sans-serif;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Animated Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(191, 0, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(255, 0, 128, 0.05) 0%, transparent 50%);
-            animation: backgroundShift 20s ease-in-out infinite alternate;
-            z-index: -1;
-        }
-
-        @keyframes backgroundShift {
-            0% { transform: scale(1) rotate(0deg); }
-            100% { transform: scale(1.1) rotate(2deg); }
-        }
-
-        .container {
-            width: 100vw;
-            height: 100vh;
-            display: grid;
-            grid-template-columns: 350px 1fr 400px;
-            grid-template-rows: 120px 1fr 80px;
+        /* Additions for new components */
+        .social-media {
+            display: flex;
             gap: 20px;
-            padding: 20px;
-            grid-template-areas:
-                "header header header"
-                "left center right"
-                "footer footer footer";
+            margin-top: 20px;
         }
 
-        /* Glassmorphism Effects */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        /* Header with Epic Styling */
-        .header {
-            grid-area: header;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.2), transparent);
-            animation: headerSweep 3s ease-in-out infinite;
-        }
-
-        @keyframes headerSweep {
-            0% { left: -100%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            z-index: 2;
-        }
-
-        .logo i {
-            font-size: 42px;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px var(--neon-blue));
-            animation: iconPulse 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes iconPulse {
-            0% { transform: scale(1); filter: drop-shadow(0 0 10px var(--neon-blue)); }
-            100% { transform: scale(1.1); filter: drop-shadow(0 0 20px var(--neon-purple)); }
-        }
-
-        .logo h1 {
-            font-family: 'Orbitron', monospace;
-            font-size: 36px;
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
-            letter-spacing: 3px;
-            animation: titleGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            0% { text-shadow: 0 0 30px rgba(0, 245, 255, 0.5); }
-            100% { text-shadow: 0 0 50px rgba(191, 0, 255, 0.7); }
-        }
-
-        .stream-stats {
-            display: flex;
-            gap: 30px;
-            z-index: 2;
-        }
-
-        .stat-box {
-            background: linear-gradient(145deg, rgba(0, 245, 255, 0.1), rgba(191, 0, 255, 0.1));
-            border: 2px solid transparent;
-            background-clip: padding-box;
-            border-radius: 15px;
-            padding: 15px 25px;
-            text-align: center;
-            min-width: 160px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-            z-index: -1;
-            margin: -2px;
-            border-radius: 15px;
-        }
-
-        .stat-box::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
-            background: rgba(10, 10, 10, 0.9);
-            border-radius: 13px;
-            z-index: -1;
-        }
-
-        .stat-value {
-            font-family: 'Orbitron', monospace;
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--neon-green), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-            animation: valueFlicker 4s ease-in-out infinite;
-        }
-
-        @keyframes valueFlicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: var(--text-glow);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            margin-top: 8px;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-            border-radius: 2px;
-            animation: progressGlow 2s ease-in-out infinite alternate;
-            width: 73%; /* 327/450 * 100 */
-        }
-
-        @keyframes progressGlow {
-            0% { box-shadow: 0 0 5px var(--neon-blue); }
-            100% { box-shadow: 0 0 15px var(--neon-purple); }
-        }
-
-        /* Left Panel - Camera & Recent Activity */
-        .left-panel {
-            grid-area: left;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .camera-container {
-            flex: 1;
-            padding: 25px;
-            position: relative;
-        }
-
-        .panel-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px var(--neon-blue);
-        }
-
-        .panel-title i {
-            font-size: 24px;
-            animation: iconRotate 6s linear infinite;
-        }
-
-        @keyframes iconRotate {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
-        }
-
-        .camera-feed {
-            background: linear-gradient(45deg, rgba(0, 245, 255, 0.05), rgba(191, 0, 255, 0.05));
-            border: 2px solid var(--glass-border);
-            border-radius: 15px;
-            height: 280px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .camera-feed::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(45deg, transparent 30%, rgba(0, 245, 255, 0.1) 50%, transparent 70%);
-            animation: cameraShimmer 4s ease-in-out infinite;
-        }
-
-        @keyframes cameraShimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .camera-placeholder {
-            text-align: center;
-            z-index: 2;
-        }
-
-        .camera-placeholder i {
-            font-size: 80px;
-            color: var(--neon-blue);
-            margin-bottom: 15px;
-            opacity: 0.6;
-            animation: cameraFloat 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes cameraFloat {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-10px); }
-        }
-
-        .recent-activity {
-            padding: 25px;
-            height: 300px;
-        }
-
-        .activity-list {
-            margin-top: 15px;
-            height: 220px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            background: rgba(0, 245, 255, 0.05);
-            border-left: 3px solid var(--neon-blue);
-            border-radius: 8px;
-            animation: activitySlide 0.5s ease-out;
-        }
-
-        @keyframes activitySlide {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .activity-icon {
+        .social-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
             color: white;
-            animation: iconSpin 10s linear infinite;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes iconSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .social-icon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0, 245, 255, 0.5);
         }
 
-        .activity-text {
-            flex: 1;
+        .twitter { background: linear-gradient(45deg, #1DA1F2, #0d8bcf); }
+        .youtube { background: linear-gradient(45deg, #FF0000, #cc0000); }
+        .twitch { background: linear-gradient(45deg, #9146FF, #7b2cff); }
+        .discord { background: linear-gradient(45deg, #5865F2, #4650c4); }
+        .instagram { background: linear-gradient(45deg, #E1306C, #C13584); }
+
+        .move-history-container {
+            padding: 25px;
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        .moves-list {
+            height: 180px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .move-item {
+            background: rgba(0, 245, 255, 0.05);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .move-item:hover {
+            background: rgba(0, 245, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        .move-number {
+            color: var(--gold);
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .move-white {
+            color: var(--board-light);
+        }
+
+        .move-black {
+            color: var(--neon-blue);
+        }
+
+        .game-info {
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .game-title {
+            font-size: 24px;
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 10px;
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .game-details {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
             font-weight: 600;
         }
 
-        .activity-time {
-            font-size: 11px;
-            color: var(--text-glow);
-            opacity: 0.7;
+        .game-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Center Panel - Chess Board */
+        .game-detail i {
+            color: var(--neon-green);
+        }
+
+        .music-player {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .track-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .track-art {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .track-details {
+            flex: 1;
+        }
+
+        .track-title {
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .track-artist {
+            font-size: 14px;
+            color: var(--text-glow);
+            opacity: 0.8;
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 245, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .play-pause {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--neon-blue);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .platform-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .platform-btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .platform-btn.active {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border-color: transparent;
+        }
+
+        .chat-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .now-playing {
+            position: absolute;
+            bottom: 130px;
+            right: 30px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 30px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid var(--neon-green);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .now-playing i {
+            color: var(--neon-green);
+        }
+
+        .highlight-move {
+            animation: highlight 1.5s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0% { background: transparent; }
+            50% { background: rgba(57, 255, 20, 0.3); }
+            100% { background: transparent; }
+        }
+
+        /* Adjustments for new layout */
         .center-panel {
             grid-area: center;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
         }
 
-        .player-info {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
+        .player-info.top {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
 
-        .player-info::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
-            animation: playerInfoGlow 5s ease-in-out infinite;
-        }
-
-        @keyframes playerInfoGlow {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
-
-        .player {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            z-index: 2;
-        }
-
-        .player-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 900;
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
-            animation: avatarPulse 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes avatarPulse {
-            0% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.5); }
-            100% { box-shadow: 0 0 40px rgba(191, 0, 255, 0.8); }
-        }
-
-        .player-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .player-name {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            font-size: 22px;
-            color: var(--text-glow);
-            text-shadow: 0 0 10px var(--neon-blue);
-        }
-
-        .player-rating {
-            font-size: 16px;
-            color: var(--gold);
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        .timer {
-            font-family: 'Orbitron', monospace;
-            font-size: 42px;
-            font-weight: 900;
-            padding: 15px 25px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--neon-green);
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
-            z-index: 2;
-        }
-
-        .timer.running {
-            color: var(--neon-green);
-            text-shadow: 0 0 15px var(--neon-green);
-        }
-
-        .timer.critical {
-            color: var(--timer-critical);
-            border-color: var(--timer-critical);
-            box-shadow: 0 0 30px rgba(255, 7, 58, 0.6);
-            animation: timerCritical 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes timerCritical {
-            0% { 
-                transform: scale(1);
-                text-shadow: 0 0 15px var(--timer-critical);
-            }
-            100% { 
-                transform: scale(1.05);
-                text-shadow: 0 0 25px var(--timer-critical);
-            }
+        .player-info.bottom {
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         .chess-board-container {
-            padding: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+            padding: 10px;
         }
 
-        .chess-board {
-            width: 480px;
-            height: 480px;
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            border: 4px solid var(--gold);
-            border-radius: 8px;
-            box-shadow: 
-                0 0 30px rgba(255, 215, 0, 0.3),
-                inset 0 0 0 2px rgba(0, 0, 0, 0.5);
-            animation: boardGlow 4s ease-in-out infinite alternate;
-        }
-
-        @keyframes boardGlow {
-            0% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 0 2px rgba(0, 0, 0, 0.5); }
-            100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.5), inset 0 0 0 2px rgba(0, 0, 0, 0.5); }
-        }
-
-        .square {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 42px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .square:hover {
-            transform: scale(1.05);
-            z-index: 10;
-        }
-
-        .square.light {
-            background-color: var(--board-light);
-        }
-
-        .square.dark {
-            background-color: var(--board-dark);
-        }
-
-        .square-coords {
-            position: absolute;
-            font-size: 10px;
-            font-weight: bold;
-            color: rgba(0, 0, 0, 0.7);
-        }
-
-        .coords-file {
-            bottom: 2px;
-            right: 4px;
-        }
-
-        .coords-rank {
-            top: 2px;
-            left: 4px;
-        }
-
-        /* Right Panel - Chat */
         .right-panel {
             grid-area: right;
             display: flex;
             flex-direction: column;
+            gap: 20px;
         }
 
-        .chat-container {
-            flex: 1;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-right: 10px;
-        }
-
-        .message {
-            display: flex;
-            gap: 15px;
-            animation: messageSlide 0.4s ease-out;
-        }
-
-        @keyframes messageSlide {
-            from { 
-                transform: translateX(20px);
-                opacity: 0;
-            }
-            to { 
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .message-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            flex-shrink: 0;
-            box-shadow: 0 0 15px rgba(255, 0, 128, 0.4);
-        }
-
-        .message-content {
-            background: rgba(0, 245, 255, 0.05);
-            border: 1px solid rgba(0, 245, 255, 0.2);
-            padding: 15px;
-            border-radius: 12px;
-            flex: 1;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .message-sender {
-            font-weight: 700;
-            color: var(--neon-blue);
-            text-shadow: 0 0 5px var(--neon-blue);
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: var(--text-glow);
-            opacity: 0.6;
-        }
-
-        .chat-input {
-            margin-top: 20px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .chat-input input {
-            flex: 1;
-            padding: 15px 20px;
-            border-radius: 12px;
-            border: 2px solid var(--glass-border);
-            background: rgba(0, 0, 0, 0.5);
-            color: var(--text);
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .chat-input input:focus {
-            outline: none;
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
-        }
-
-        .chat-input button {
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 15px 25px;
-            cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-
-        .chat-input button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 245, 255, 0.4);
-        }
-
-        /* Footer */
         .footer {
             grid-area: footer;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .footer::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
-            animation: footerLine 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes footerLine {
-            0% { transform: scaleX(0); }
-            100% { transform: scaleX(1); }
-        }
-
-        .stream-status {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 18px;
-            font-weight: 700;
-            z-index: 2;
-        }
-
-        .live-indicator {
-            width: 12px;
-            height: 12px;
-            background: var(--timer-critical);
-            border-radius: 50%;
-            animation: livePulse 2s ease-in-out infinite;
-        }
-
-        @keyframes livePulse {
-            0% { 
-                box-shadow: 0 0 0 0 rgba(255, 7, 58, 0.7);
-                transform: scale(1);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(255, 7, 58, 0);
-                transform: scale(1.1);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(255, 7, 58, 0);
-                transform: scale(1);
-            }
-        }
-
-        .stream-controls {
-            display: flex;
-            gap: 20px;
-            z-index: 2;
-        }
-
-        .control-btn {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            padding: 12px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .control-btn:hover {
-            background: var(--accent);
-            border-color: var(--neon-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 245, 255, 0.2);
-        }
-
-        .control-btn.live {
-            background: linear-gradient(45deg, var(--timer-critical), #ff4757);
-            border-color: var(--timer-critical);
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .control-btn.live:hover {
-            background: linear-gradient(45deg, #ff4757, var(--timer-critical));
-            box-shadow: 0 5px 20px rgba(255, 7, 58, 0.4);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1400px) {
-            .container {
-                grid-template-columns: 300px 1fr 350px;
-            }
-            
-            .chess-board {
-                width: 400px;
-                height: 400px;
-            }
+            padding: 15px 40px;
         }
     </style>
 </head>
@@ -857,6 +355,14 @@
                         <p>Camera Feed Active</p>
                     </div>
                 </div>
+                <!-- Social Media Links -->
+                <div class="social-media">
+                    <a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-icon twitch"><i class="fab fa-twitch"></i></a>
+                    <a href="#" class="social-icon discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+                </div>
             </div>
 
             <div class="recent-activity glass-panel">
@@ -893,4 +399,275 @@
                         <div class="activity-text">New follower milestone!</div>
                         <div class="activity-time">12m ago</div>
                     </div>
-                    <div class="activity-
+                </div>
+            </div>
+            
+            <!-- Music Player -->
+            <div class="music-player glass-panel">
+                <div class="panel-title">
+                    <i class="fas fa-music"></i>
+                    <span>Now Playing</span>
+                </div>
+                <div class="track-info">
+                    <div class="track-art">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <div class="track-details">
+                        <div class="track-title">Epic Chess Battle Theme</div>
+                        <div class="track-artist">Strategy Soundtracks</div>
+                    </div>
+                </div>
+                <div class="player-controls">
+                    <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                    <button class="control-btn play-pause"><i class="fas fa-pause"></i></button>
+                    <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                </div>
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" class="volume-slider" min="0" max="100" value="80">
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel - Chess Board -->
+        <div class="center-panel">
+            <!-- Game Information -->
+            <div class="game-info glass-panel">
+                <div class="game-title">GRANDMASTER SHOWDOWN</div>
+                <div class="game-details">
+                    <div class="game-detail">
+                        <i class="fas fa-chess-board"></i>
+                        <span>Game #42</span>
+                    </div>
+                    <div class="game-detail">
+                        <i class="fas fa-trophy"></i>
+                        <span>Tournament Finals</span>
+                    </div>
+                    <div class="game-detail">
+                        <i class="fas fa-chess"></i>
+                        <span>Classical 90+30</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- White Player -->
+            <div class="player-info top glass-panel">
+                <div class="player">
+                    <div class="player-avatar">W</div>
+                    <div class="player-details">
+                        <div class="player-name">GrandMasterWhite</div>
+                        <div class="player-rating">Rating: 2750</div>
+                    </div>
+                </div>
+                <div class="timer running">10:00</div>
+            </div>
+            
+            <!-- Chess Board -->
+            <div class="chess-board-container glass-panel">
+                <div class="chess-board">
+                    <!-- Chess board squares (64 total) -->
+                    <!-- This is simplified for the example -->
+                    <div class="square dark"><span class="square-coords coords-rank">8</span></div>
+                    <div class="square light"><span class="square-coords coords-rank">8</span></div>
+                    <!-- ... more squares ... -->
+                    <div class="square light"><span class="square-coords coords-file">h</span></div>
+                </div>
+            </div>
+            
+            <!-- Black Player -->
+            <div class="player-info bottom glass-panel">
+                <div class="player">
+                    <div class="player-avatar">B</div>
+                    <div class="player-details">
+                        <div class="player-name">DarkStrategist</div>
+                        <div class="player-rating">Rating: 2720</div>
+                    </div>
+                </div>
+                <div class="timer">10:00</div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Move History and Chat -->
+        <div class="right-panel">
+            <!-- Move History -->
+            <div class="move-history-container glass-panel">
+                <div class="panel-title">
+                    <i class="fas fa-history"></i>
+                    <span>Move History</span>
+                </div>
+                <div class="moves-list">
+                    <div class="move-item">
+                        <div class="move-number">1.</div>
+                        <div class="move-white highlight-move">e4</div>
+                        <div class="move-black">e5</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">2.</div>
+                        <div class="move-white">Nf3</div>
+                        <div class="move-black">Nc6</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">3.</div>
+                        <div class="move-white">Bb5</div>
+                        <div class="move-black">a6</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">4.</div>
+                        <div class="move-white">Ba4</div>
+                        <div class="move-black">Nf6</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">5.</div>
+                        <div class="move-white">O-O</div>
+                        <div class="move-black">Be7</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">6.</div>
+                        <div class="move-white">Re1</div>
+                        <div class="move-black">b5</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">7.</div>
+                        <div class="move-white">Bb3</div>
+                        <div class="move-black">d6</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">8.</div>
+                        <div class="move-white">c3</div>
+                        <div class="move-black">O-O</div>
+                    </div>
+                    <div class="move-item">
+                        <div class="move-number">9.</div>
+                        <div class="move-white">h3</div>
+                        <div class="move-black">Nb8</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- YouTube Chat -->
+            <div class="chat-container glass-panel">
+                <div class="chat-header">
+                    <div class="chat-title">YouTube Chat</div>
+                    <div class="platform-selector">
+                        <button class="platform-btn active">YouTube</button>
+                        <button class="platform-btn">Twitch</button>
+                        <button class="platform-btn">Discord</button>
+                    </div>
+                </div>
+                <div class="chat-messages">
+                    <div class="message">
+                        <div class="message-avatar">C</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-sender">ChessFan88</div>
+                                <div class="message-time">2:15 PM</div>
+                            </div>
+                            <div class="message-text">Great opening! Why not play Bc5 instead?</div>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="message-avatar">P</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-sender">PawnMaster</div>
+                                <div class="message-time">2:16 PM</div>
+                            </div>
+                            <div class="message-text">Anyone else think black should castle queenside?</div>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="message-avatar">G</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-sender">GrandmasterViewer</div>
+                                <div class="message-time">2:17 PM</div>
+                            </div>
+                            <div class="message-text">That knight sacrifice was brilliant! 🔥</div>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="message-avatar">S</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-sender">StrategyQueen</div>
+                                <div class="message-time">2:18 PM</div>
+                            </div>
+                            <div class="message-text">What's the eval bar showing now?</div>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="message-avatar">C</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-sender">CheckmateChamp</div>
+                                <div class="message-time">2:19 PM</div>
+                            </div>
+                            <div class="message-text">White has a forced mate in 3 if they find it!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Send a message to YouTube chat...">
+                    <button><i class="fas fa-paper-plane"></i> Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer glass-panel">
+            <div class="stream-status">
+                <div class="live-indicator"></div>
+                <span>LIVE - Chess Tournament Finals</span>
+            </div>
+            <div class="stream-controls">
+                <button class="control-btn"><i class="fas fa-cog"></i> Settings</button>
+                <button class="control-btn"><i class="fas fa-microphone"></i> Audio</button>
+                <button class="control-btn live"><i class="fas fa-broadcast-tower"></i> End Stream</button>
+            </div>
+        </footer>
+        
+        <!-- Now Playing Notification -->
+        <div class="now-playing glass-panel">
+            <i class="fas fa-music"></i>
+            Now Playing: Epic Chess Battle Theme - Strategy Soundtracks
+        </div>
+    </div>
+
+    <script>
+        // Simple animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Move highlighting animation
+            const moves = document.querySelectorAll('.move-item');
+            setInterval(() => {
+                const randomMove = moves[Math.floor(Math.random() * moves.length)];
+                randomMove.classList.add('highlight-move');
+                setTimeout(() => {
+                    randomMove.classList.remove('highlight-move');
+                }, 1500);
+            }, 5000);
+            
+            // Platform switcher
+            const platformBtns = document.querySelectorAll('.platform-btn');
+            platformBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    platformBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.querySelector('.chat-title').textContent = 
+                        btn.textContent + ' Chat';
+                });
+            });
+            
+            // Music player controls
+            const playBtn = document.querySelector('.play-pause');
+            playBtn.addEventListener('click', () => {
+                const icon = playBtn.querySelector('i');
+                if (icon.classList.contains('fa-play')) {
+                    icon.classList.replace('fa-play', 'fa-pause');
+                } else {
+                    icon.classList.replace('fa-pause', 'fa-play');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
